@@ -9,19 +9,20 @@ import EditProfileScreen from '../screens/EditProfileScreen';
 import HomeScreen from '../screens/HomeScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import SignupScreen from '../screens/SignupScreen';
-import Screen1 from './../screens/Screen1';
-import Screen2 from './../screens/Screen2';
 import Screen3 from './../screens/Screen3';
 import { StackParamList } from "./../typings/navigations";
+import ChatsScreen from '../screens/ChatsScreen';
+import OpenChatScreen from '../screens/OpenChatScreen';
 
 const Stack = createNativeStackNavigator<StackParamList>();
 const Tab = createBottomTabNavigator();
 
 function ChatStackNavigator() {
+    const openChat = useSelector((state: any) => state.chat.openChat);
     return (
         <Stack.Navigator>
-            <Stack.Screen name="Screen1" component={Screen1} />
-            <Stack.Screen name="Screen2" component={Screen2} />
+            <Stack.Screen name="Chats" component={ChatsScreen} options={{ title: 'Chats' }} />
+            <Stack.Screen name="OpenChat" component={OpenChatScreen} options={{ title: `${openChat.title}` }} />
             <Stack.Screen name="Screen3" component={Screen3} />
         </Stack.Navigator>
     );
@@ -31,7 +32,7 @@ function ProfileStackNavigator() {
     return (
         <Stack.Navigator>
             <Stack.Screen name="Profile" component={ProfileScreen} />
-            <Stack.Screen name="EditProfile" component={EditProfileScreen} />
+            <Stack.Screen name="EditProfile" component={EditProfileScreen} options={{ title: 'Edit Profile' }} />
         </Stack.Navigator>
     )
 }

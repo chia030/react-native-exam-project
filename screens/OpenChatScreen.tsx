@@ -1,10 +1,14 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import { StyleSheet, Text, View } from 'react-native';
 
-export default function Screen2() {
+
+export default function OpenChatScreen() {
+
+    const openChat = useSelector((state: any) => state.chat.openChat);
     return (
         <View style={styles.container}>
-            <Text>Screen 2</Text>
+            <Text>{openChat.title}</Text>
         </View>
     );
 }

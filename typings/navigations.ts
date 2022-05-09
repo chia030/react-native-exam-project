@@ -3,6 +3,7 @@ export type StackParamList = {
     OpenChat: undefined;
     Screen3: undefined;
     Signup: undefined;
+    Login: undefined;
     Profile: undefined;
     EditProfile: undefined;
 }

@@ -15,6 +15,7 @@ type ScreenNavigationType = NativeStackNavigationProp<
 export default function ChatsScreen() {
     const navigation = useNavigation<ScreenNavigationType>()
     const [title, onChangeTitle] = React.useState('');
+    const [message, onChangeMessage] = React.useState('');
 
     const chatrooms: Chatroom[] = useSelector((state: any) => state.chat.chatrooms)
 
@@ -25,31 +26,41 @@ export default function ChatsScreen() {
     }, [])
 
     const handleAddChatroom = () => {
-        const chatroom: Chatroom = new Chatroom(title, Status.UNREAD, '', new Date());
+        const chatroom: Chatroom = new Chatroom(title, Status.UNREAD, message, new Date());
         dispatch(addChatroom(chatroom));
+        onChangeTitle('');
+        onChangeMessage('');
     }
     const renderChatroom = ({ item }: { item: any }) => (
-        <Button title={item.title} onPress={() => handleOpenChat(item)} />
+        <Button 
+            title={item.title} 
+            color={item.status === Status.UNREAD ? '#009688' : '#607d8b'}
+            onPress={() => handleOpenChat(item)} 
+        />
     );
-    const handleOpenChat = (item: Chatroom ) => {
+    const handleOpenChat = (item: Chatroom) => {
         dispatch(setOpenChat(item));
         navigation.navigate("OpenChat");
+        dispatch(fetchChatrooms());
     }
 
     return (
         <View style={styles.container}>
-
             <FlatList
                 data={chatrooms}
                 renderItem={renderChatroom}
             />
-
             <TextInput
                 onChangeText={onChangeTitle}
                 value={title}
-                placeholder="Chatroom name"
+                placeholder="Chat title..."
             />
-            <Button title="Create chatroom" onPress={handleAddChatroom} />
+            <TextInput
+                onChangeText={onChangeMessage}
+                value={message}
+                placeholder="Message..."
+            />
+            <Button title="Create new chat" onPress={handleAddChatroom} />
         </View>
     );
 }

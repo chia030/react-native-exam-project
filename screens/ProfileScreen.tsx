@@ -13,6 +13,7 @@ export default function ProfileScreen() {
         <View style={styles.container}>
             <Text>Profile Screen</Text>
             <Button title="Edit profile" onPress={() => navigation.navigate("EditProfile")} />
+            <Button title="Change password" onPress={() => navigation.navigate("ChangePassword")} />
         </View>
     );
 }

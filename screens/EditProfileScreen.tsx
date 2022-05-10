@@ -7,11 +7,13 @@ import { User } from '../entities/User';
 
 export default function EditProfileScreen() {
     const user: User = useSelector((state: RootState) => state.user.loggedInUser);
-    const [textEmail, setTextEmail] = useState(user.email)
-    // console.log(user.email);
+    const [displayName, setDisplayName] = useState(user.displayname ? user.displayname : '');
+    const [email, setEmail] = useState(user.email);
+    const [studyProgram, setStudyProgram] = useState('None')
+    // photoUrl
 
     const onSave = () => {
-        if (textEmail !== ''  /* && other inputs are not empty */) {
+        if (email !== ''  /* && other inputs are not empty */) {
             // save the data to the server
         } else {
             //Show error message
@@ -21,14 +23,20 @@ export default function EditProfileScreen() {
     return (
         <View style={styles.container}>
             <Text>Edit Profile Screen</Text>
-            <Input title="What is your email?"
-                inputValue={textEmail}
-                setText={setTextEmail}
+            <Input title="Display Name"
+                inputValue={displayName}
+                setText={setDisplayName}
+                error="Display Name cannot be empty"
+            />
+            <Input title="Email"
+                inputValue={email}
+                setText={setEmail}
                 error="Email cannot be empty"
             />
-            {/* <Input title="Study programme"
-                inputValue=""
-                error="Study programme cannot be empty" /> */}
+            <Input title="Study programme"
+                inputValue={studyProgram}
+                setText={setStudyProgram}
+                error="Study programme cannot be empty" />
 
             <Button title="Save" onPress={() => console.log("Setup saving to server...")} />
         </View>

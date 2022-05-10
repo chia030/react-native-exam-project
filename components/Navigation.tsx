@@ -14,6 +14,7 @@ import { StackParamList } from "./../typings/navigations";
 import ChatsScreen from '../screens/ChatsScreen';
 import OpenChatScreen from '../screens/OpenChatScreen';
 import LoginScreen from '../screens/LoginScreen';
+import ChangePasswordScreen from '../screens/ChangePassword';
 
 const Stack = createNativeStackNavigator<StackParamList>();
 const Tab = createBottomTabNavigator();
@@ -34,6 +35,7 @@ function ProfileStackNavigator() {
         <Stack.Navigator>
             <Stack.Screen name="Profile" component={ProfileScreen} />
             <Stack.Screen name="EditProfile" component={EditProfileScreen} options={{ title: 'Edit Profile' }} />
+            <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} options={{ title: 'Change Password' }} />
         </Stack.Navigator>
     )
 }

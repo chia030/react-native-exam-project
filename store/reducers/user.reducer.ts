@@ -1,5 +1,5 @@
 import { User } from "../../entities/User";
-import { LOGIN, LOGOUT, REHYDRATE_USER, SIGNUP } from "../actions/user.actions";
+import { LOGIN, LOGOUT, REHYDRATE_USER, SIGNUP, CHANGE_PASSWORD } from "../actions/user.actions";
 
 interface ReduxState {
     loggedInUser: User | null,
@@ -23,6 +23,9 @@ const userReducer = (state: ReduxState = initialState, action: any) => {
             // const user = new User(action.payload.email, '', '');
             //state.loggedInUser = user; // MUTATION!!!!
             return { ...state, loggedInUser: action.payload.user, idToken: action.payload.idToken }
+        case CHANGE_PASSWORD: 
+            return { ...state, loggedInUser: action.payload.user, idToken: action.payload.idToken } //not sure this is needed
+        
 
         default:
             return state;

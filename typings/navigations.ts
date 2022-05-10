@@ -6,4 +6,5 @@ export type StackParamList = {
     Login: undefined;
     Profile: undefined;
     EditProfile: undefined;
+    ChangePassword: undefined;
 }

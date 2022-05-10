@@ -19,7 +19,7 @@ export default function ChatsScreen() {
 
     const chatrooms: Chatroom[] = useSelector((state: any) => state.chat.chatrooms)
 
-    const dispatch = useDispatch()
+    const dispatch = useDispatch();
 
     useEffect(() => { 
         dispatch(fetchChatrooms())
@@ -46,6 +46,7 @@ export default function ChatsScreen() {
 
     return (
         <View style={styles.container}>
+            {/* <Button title="Screen3" onPress={() => navigation.navigate("Screen3")} /> */}
             <FlatList
                 data={chatrooms}
                 renderItem={renderChatroom}

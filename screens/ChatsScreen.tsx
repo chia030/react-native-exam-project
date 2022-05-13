@@ -1,7 +1,7 @@
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useEffect } from 'react';
-import { Button, FlatList, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Button, FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { Chatroom, Status } from '../entities/Chatroom';
 import { addChatroom, fetchChatrooms, setOpenChat } from '../store/actions/chat.actions';
@@ -32,11 +32,12 @@ export default function ChatsScreen() {
         onChangeMessage('');
     }
     const renderChatroom = ({ item }: { item: any }) => (
-        <Button 
-            title={item.title} 
-            color={item.status === Status.UNREAD ? '#009688' : '#607d8b'}
-            onPress={() => handleOpenChat(item)} 
-        />
+        <TouchableOpacity
+            onPress={() => handleOpenChat(item)}
+            style={styles.touchable}
+        >
+            <Text>{item.title}</Text>
+        </TouchableOpacity>
     );
     const handleOpenChat = (item: Chatroom) => {
         dispatch(setOpenChat(item));
@@ -73,4 +74,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
+    touchable: {
+        margin:5
+    }
 })

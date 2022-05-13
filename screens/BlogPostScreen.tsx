@@ -1,10 +1,10 @@
 import React from 'react';
 import { Button, StyleSheet, Text, View } from 'react-native';
 
-export default function HomeScreen() {
+export default function BlogPostScreen() {
     return (
         <View style={styles.container}>
-            <Text>Home Screen</Text>
+            <Text>Blog Post Screen</Text>
         </View>
     );
 }

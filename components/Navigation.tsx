@@ -6,18 +6,29 @@ import { StyleSheet } from 'react-native';
 import { useSelector } from 'react-redux';
 import { RootState } from '../App';
 import EditProfileScreen from '../screens/EditProfileScreen';
-import HomeScreen from '../screens/HomeScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import SignupScreen from '../screens/SignupScreen';
-import Screen3 from './../screens/Screen3';
 import { StackParamList } from "./../typings/navigations";
 import ChatsScreen from '../screens/ChatsScreen';
 import OpenChatScreen from '../screens/OpenChatScreen';
 import LoginScreen from '../screens/LoginScreen';
 import ChangePasswordScreen from '../screens/ChangePassword';
+import FeedScreen from '../screens/FeedScreen';
+import BlogPostScreen from '../screens/BlogPostScreen';
+import EventScreen from '../screens/EventScreen';
 
 const Stack = createNativeStackNavigator<StackParamList>();
 const Tab = createBottomTabNavigator();
+
+function HomeStackNavigator() {
+    return (
+        <Stack.Navigator>
+            <Stack.Screen name="Feed" component={FeedScreen} />
+            <Stack.Screen name="BlogPost" component={BlogPostScreen} options={{ title: 'Post' }} />
+            <Stack.Screen name="Event" component={EventScreen} />
+        </Stack.Navigator>
+    )
+}
 
 function ChatStackNavigator() {
     const openChat = useSelector((state: any) => state.chat.openChat);
@@ -25,7 +36,7 @@ function ChatStackNavigator() {
         <Stack.Navigator>
             <Stack.Screen name="Chats" component={ChatsScreen} options={{ title: 'Chats' }} />
             <Stack.Screen name="OpenChat" component={OpenChatScreen} options={{ title: `${openChat.title}` }} />
-            <Stack.Screen name="Screen3" component={Screen3} />
+            {/* <Stack.Screen name="Screen3" component={Screen3} /> */}
         </Stack.Navigator>
     );
 }
@@ -53,7 +64,7 @@ export default function Navigation() {
             {user !== null ? (
                 // Show the app with all navigation
                 <Tab.Navigator screenOptions={{ headerShown: false }}>
-                    <Tab.Screen name="Home" component={HomeScreen} />
+                    <Tab.Screen name="Home" component={HomeStackNavigator} />
                     {/* <Tab.Screen name="Discover" component={DiscoverScreen} /> */}
                     <Tab.Screen name="Chat" component={ChatStackNavigator} />
                     <Tab.Screen name="Menu" component={ProfileStackNavigator} />

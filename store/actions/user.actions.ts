@@ -11,6 +11,7 @@ export const REFRESH_TO_ID_TOKEN = 'REFRESH_TO_ID_TOKEN';
 export const LOGIN = 'LOGIN';
 export const LOGOUT = 'LOGOUT';
 export const CHANGE_PASSWORD = 'CHANGE_PASSWORD';
+export const UPDATE_EMAIL = 'UPDATE_EMAIL';
 export const UPDATE_PROFILE = 'UPDATE_PROFILE';
 
 export const rehydrateUser = (user: User, idToken: string) => {
@@ -64,7 +65,7 @@ export const login = (email: string, password: string) => {
             const data: FirebaseSigninSuccess = await response.json(); 
             console.log("data from server", data);
 
-            const user = new User(data.email, data.displayName, '', data.profilePicture); //email, displayname, studyProgram, photoUrl
+            const user = new User(data.email, data.displayName, data.profilePicture); //email, displayname, studyProgram, photoUrl
 
             await SecureStore.setItemAsync('idToken', data.idToken);
             await SecureStore.setItemAsync('user', JSON.stringify(user));
@@ -149,13 +150,56 @@ export const changePassword = (password: string) => {
     };
 };
 
-export const updateProfile = (photoUrl: string, displayname: string, email: string, studyProgram: string) => {
+export const updateEmail = (email: string) => {
     return async (dispatch: any, getState: any) => {
+        const idToken = getState().user.idToken;
+        const loggedInUser = getState().user.loggedInUser;
+ 
+        if (email !== loggedInUser.email) {
+            const response = await fetch('https://identitytoolkit.googleapis.com/v1/accounts:update?key=AIzaSyB-uLXO1Pu8wqjMLUyNtHefWZTEWYdYEPw', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    idToken: idToken,
+                    email: email,
+                    returnSecureToken: false
+                })
+            });
+
+            if (!response.ok) {
+                console.log(response.json())
+
+            } else {
+                const data: FirebaseSignupSuccess = await response.json();
+                console.log("data from server", data);
+
+                const user = new User(data.email, loggedInUser.displayname ? loggedInUser.displayname: '', loggedInUser.photoUrl? loggedInUser.photoUrl : '');
+
+                await SecureStore.setItemAsync('idToken', JSON.stringify(data.idToken));
+                await SecureStore.setItemAsync('user', JSON.stringify(user)); 
+
+                dispatch({ type: UPDATE_EMAIL, payload: { user, idToken: data.idToken } })
+            }
+        }
+    }
+}
+
+export const updateProfile = (photoUrl: string, displayname: string) => {
+    return async (dispatch: any, getState: any) => {
+
+        const loggedInUser = getState().user.loggedInUser;
+
+        // if (email !== loggedInUser.email) {
+        //     dispatch(updateEmail(email));
+        // }
+
         const idToken = getState().user.idToken;
 
         let body;
 
-        if (photoUrl !== '' &&  displayname !== '') {
+        if (photoUrl !== loggedInUser.photoUrl && photoUrl !== "" &&  displayname !== loggedInUser.displayname && displayname !== "") {
             body = {
                 idToken: idToken,
                 displayName: displayname,
@@ -163,14 +207,14 @@ export const updateProfile = (photoUrl: string, displayname: string, email: stri
                 returnSecureToken: true
             }
         }
-        else if (photoUrl === '' && displayname !== '') {
+        else if (photoUrl === loggedInUser.photoUrl && displayname !== loggedInUser.displayname && displayname !== "") {
             body = {
                 idToken: idToken,
                 displayName: displayname,
                 returnSecureToken: true
             }
         }
-        else if (photoUrl !== '' && displayname === '') {
+        else if (photoUrl !== loggedInUser.photoUrl && photoUrl !== "" && displayname === loggedInUser.displayname) {
             body = {
                 idToken: idToken,
                 photoUrl: photoUrl,
@@ -199,8 +243,8 @@ export const updateProfile = (photoUrl: string, displayname: string, email: stri
                 const data: FirebaseUpdateProfileSuccess = await response.json();
                 console.log("data from server", data);
 
-                const user = new User(data.email, data.displayName, studyProgram, data.photoUrl);
-
+                const user = new User(data.email, data.displayName, data.photoUrl);
+                
                 await dispatch(refreshTokenToIdToken(data.refreshToken));
                 // await SecureStore.setItemAsync('idToken', JSON.stringify(data.idToken)); //the new token is set in refreshTokeToIdToken();
                 await SecureStore.setItemAsync('user', JSON.stringify(user)); 

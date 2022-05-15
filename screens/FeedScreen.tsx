@@ -16,24 +16,15 @@ type ScreenNavigationType = NativeStackNavigationProp<
 >
 
 export default function FeedScreen() {
-    const queryClient = useQueryClient()
+
     const navigation = useNavigation<ScreenNavigationType>()
 
-    const [title, setTitle] = React.useState('');
-    const [content, setContent] = React.useState('');
-
     const dispatch = useDispatch();
-    // const posts: Post[] = useSelector((state: any) => state.posts.postsList);
-    const user: User = useSelector((state: any) => state.user.loggedInUser);
-    const { mutate: createPost } = usePostPost();
 
-    const handleAddPost = () => {
-        const post: Post = new Post(title, user.email, content, new Date());
-        createPost(post, { onSuccess: () => queryClient.invalidateQueries('posts') })
-        setTitle('')
-        setContent('')
+    const handleOpenPost = (item: Post) => {
+        dispatch(setOpenPost(item));
+        navigation.navigate("Post");
     }
-
 
     const { isLoading, isError, posts, error } = useGetPosts();
 
@@ -42,17 +33,23 @@ export default function FeedScreen() {
             onPress={() => handleOpenPost(item)} 
             style={styles.touchable}
         >
-            <View style={styles.touchableView}>
-                <Text style={styles.titleText}>{item.title}</Text>
-                <Text>Author: {item.author}</Text>
-                <Text>Content: {item.content}</Text>
-            </View>
+            {item.isEvent && (
+                <View style={styles.touchableView}>
+                    <Text style={styles.titleText}>{item.title}</Text>
+                    <Text>Organizer: {item.author}</Text>
+                    <Text>{new Date(item.timestamp).toLocaleString("en-GB")} </Text>
+                    <Text style={styles.contentText}>{item.content === item.content.slice(0, 100) ? item.content : `${item.content.slice(0, 100)}...`}</Text>
+                </View>
+            )}
+            {!item.isEvent && (
+                <View style={styles.touchableView}>
+                    <Text style={styles.titleText}>{item.title}</Text>
+                    <Text>Author: {item.author}</Text>
+                    <Text style={styles.contentText}>{item.content === item.content.slice(0, 100) ? item.content : `${item.content.slice(0, 100)}...`}</Text>
+                </View>
+            )}
         </TouchableOpacity>
     );
-    const handleOpenPost = (item: Post) => {
-        dispatch(setOpenPost(item));
-        navigation.navigate("BlogPost");
-    }
 
     return (
         <View style={styles.container}>
@@ -60,17 +57,10 @@ export default function FeedScreen() {
                 data={posts}
                 renderItem={renderPost}
             />
-            <TextInput
-                onChangeText={setTitle}
-                value={title}
-                placeholder="Post Title..."
+            <Button
+                title='+ New post'
+                onPress={() => navigation.navigate("AddPost")}
             />
-            <TextInput
-                onChangeText={setContent}
-                value={content}
-                placeholder="Content..."
-            />
-            <Button title="Create new post" onPress={handleAddPost} />
         </View>
     );
 }
@@ -83,8 +73,9 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     touchable: {
-        marginTop:10,
-        marginBottom:10
+        // marginTop:10,
+        // marginBottom:10,
+        margin:10
     },
     touchableView: {
         flex:1,
@@ -93,5 +84,8 @@ const styles = StyleSheet.create({
     titleText: {
         fontSize: 20,
         fontWeight: "bold"
+    },
+    contentText: {
+        textAlign: 'center'
     }
 })

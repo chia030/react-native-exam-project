@@ -21,11 +21,12 @@ export default function ProfileScreen() {
         <View style={styles.container}>
             <Image
                 style={styles.photo}
-                source={{uri:user.photoUrl !== '' && user.photoUrl ? user.photoUrl : '../assets/images/default-avatar.png'}}
+                source={user.photoUrl ? {uri:user.photoUrl} : require('../assets/images/default-avatar.png')}
             />
             <Text>{`Name: ${user.displayname}`}</Text>
             <Text>{`Email: ${user.email}`}</Text>
             <Button title="Edit profile" onPress={() => navigation.navigate("EditProfile")} />
+            <Button title="Change email" onPress={() => navigation.navigate("ChangeEmail")} />
             <Button title="Change password" onPress={() => navigation.navigate("ChangePassword")} />
             <Button title="Logout" onPress={() => dispatch(logout())} />
         </View>

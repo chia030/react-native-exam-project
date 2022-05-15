@@ -29,7 +29,7 @@ export default function OpenChatScreen() {
     const handleMessage = () => {
         const msg = { title: message, user: loggedInUser }
         console.log("Saving message", msg);
-        createChatmessage(msg, { onSuccess: () => queryClient.invalidateQueries('chatrooms') })
+        createChatmessage(msg, { onSuccess: () => queryClient.invalidateQueries('chatmessages') })
     }
 
     const renderMessages = ({ item }: { item: any }) => (

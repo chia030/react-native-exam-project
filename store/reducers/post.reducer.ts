@@ -10,7 +10,7 @@ interface ReduxState {
 
 const initialState: ReduxState = {
     posts: [],
-    openPost: new Post('', '', '', new Date()),
+    openPost: new Post('', '', '', new Date(), false),
     counter: 0
 }
 

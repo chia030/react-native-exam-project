@@ -6,8 +6,9 @@ export type StackParamList = {
     Login: undefined;
     Profile: undefined;
     EditProfile: undefined;
+    ChangeEmail: undefined;
     ChangePassword: undefined;
     Feed: undefined;
-    BlogPost: undefined;
-    Event: undefined;
+    AddPost: undefined;
+    Post: undefined;
 }

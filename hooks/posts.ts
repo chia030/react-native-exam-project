@@ -16,7 +16,7 @@ export const useGetPosts = () => {
     let posts: Post[] = [];
     for (const key in data?.data) {
         const post = data?.data[key];
-        posts.push(new Post(post.title, post.author, post.content, new Date(post.timestamp), key))
+        posts.push(new Post(post.title, post.author, post.content, post.timestamp, post.isEvent, key))
     }
 
     return { isLoading, isError, posts, error };

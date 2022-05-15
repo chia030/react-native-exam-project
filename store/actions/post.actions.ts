@@ -34,7 +34,13 @@ export const addPost = (post: Post) => {
     };
 }
 
-export const fetchChatrooms = () => {
+export const setOpenPost = (post: Post) => {
+    return async (dispatch: any, getState: any) => {
+        dispatch({ type: SET_OPEN_POST, payload: post });
+    }
+}
+
+export const fetchPosts = () => {
     return async (dispatch: any, getState: any) => {
         const token = getState().user.idToken;
 
@@ -59,7 +65,7 @@ export const fetchChatrooms = () => {
 
             console.log("posts", posts);
 
-            dispatch({ type: 'FETCH_POSTS', payload: posts })
+            dispatch({ type: FETCH_POSTS, payload: posts })
         }
     };
 

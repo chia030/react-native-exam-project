@@ -21,10 +21,11 @@ const Stack = createNativeStackNavigator<StackParamList>();
 const Tab = createBottomTabNavigator();
 
 function HomeStackNavigator() {
+    const openPost = useSelector((state:any) => state.posts.openPost);
     return (
         <Stack.Navigator>
             <Stack.Screen name="Feed" component={FeedScreen} />
-            <Stack.Screen name="BlogPost" component={BlogPostScreen} options={{ title: 'Post' }} />
+            <Stack.Screen name="BlogPost" component={BlogPostScreen} options={{ title: /*`${openPost.title}`*/ 'Post' }} />
             <Stack.Screen name="Event" component={EventScreen} />
         </Stack.Navigator>
     )

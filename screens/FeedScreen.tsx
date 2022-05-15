@@ -8,6 +8,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useGetPosts, usePostPost } from '../hooks/posts';
 import { User } from '../entities/User';
 import { useQueryClient } from 'react-query';
+import { setOpenPost } from '../store/actions/post.actions';
 
 type ScreenNavigationType = NativeStackNavigationProp<
     StackParamList,
@@ -41,22 +42,20 @@ export default function FeedScreen() {
             onPress={() => handleOpenPost(item)} 
             style={styles.touchable}
         >
-            <View>
-                <Text>{item.title}</Text>
+            <View style={styles.touchableView}>
+                <Text style={styles.titleText}>{item.title}</Text>
                 <Text>Author: {item.author}</Text>
                 <Text>Content: {item.content}</Text>
             </View>
         </TouchableOpacity>
     );
     const handleOpenPost = (item: Post) => {
-        // dispatch(setOpenChat(item));
+        dispatch(setOpenPost(item));
         navigation.navigate("BlogPost");
-        // dispatch(fetchChatrooms());
     }
 
     return (
         <View style={styles.container}>
-            <Text>Feed Screen</Text>
             <FlatList
                 data={posts}
                 renderItem={renderPost}
@@ -84,7 +83,15 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     touchable: {
-        marginTop:5,
-        marginBottom:5
+        marginTop:10,
+        marginBottom:10
+    },
+    touchableView: {
+        flex:1,
+        alignItems: 'center',
+    },
+    titleText: {
+        fontSize: 20,
+        fontWeight: "bold"
     }
 })

@@ -1,10 +1,13 @@
 import * as SecureStore from 'expo-secure-store';
+import { FirebaseSigninSuccess } from '../../entities/FirebaseSigninSuccess';
 import { FirebaseSignupSuccess } from "../../entities/FirebaseSignupSuccess";
+import { FirebaseUpdateProfileSuccess } from '../../entities/FirebaseUpdateProfileSuccess';
 import { User } from '../../entities/User';
 
 
 export const SIGNUP = 'SIGNUP';
 export const REHYDRATE_USER = 'REHYDRATE_USER';
+export const REFRESH_TO_ID_TOKEN = 'REFRESH_TO_ID_TOKEN';
 export const LOGIN = 'LOGIN';
 export const LOGOUT = 'LOGOUT';
 export const CHANGE_PASSWORD = 'CHANGE_PASSWORD';
@@ -14,37 +17,57 @@ export const rehydrateUser = (user: User, idToken: string) => {
     return { type: REHYDRATE_USER, payload: { user, idToken } }
 }
 
+export const refreshTokenToIdToken = (refreshToken: string) => {
+    return async (dispatch: any, getState: any) => {
+        const response = await fetch('https://securetoken.googleapis.com/v1/token?key=AIzaSyB-uLXO1Pu8wqjMLUyNtHefWZTEWYdYEPw', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                refreshToken: refreshToken
+            })            
+        });
+
+        if (!response.ok) {
+            // ...
+        } else {
+            const data: any = await response.json(); 
+            console.log("data from server", data);
+
+            await SecureStore.setItemAsync('idToken', data.idToken);
+
+            dispatch({ type: REFRESH_TO_ID_TOKEN, payload: { idToken: data.idToken } })
+        }
+
+    }
+}
+
 export const login = (email: string, password: string) => {
     return async (dispatch: any, getState: any) => {
-        //const token = getState().user.token; // if you have a reducer named user(from combineReducers) with a token variable​
 
         const response = await fetch('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyB-uLXO1Pu8wqjMLUyNtHefWZTEWYdYEPw', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ //javascript to json
-                //key value pairs of data you want to send to server
-                // ...
+            body: JSON.stringify({
                 email: email,
                 password: password,
                 returnSecureToken: true
             })
         });
 
-        // console.log(response.json());
-
         if (!response.ok) {
-            //There was a problem..
-            //dispatch({type: SIGNUP_FAILED, payload: 'something'})
+            // ...
         } else {
-            const data: FirebaseSignupSuccess = await response.json(); // json to javascript
+            const data: FirebaseSigninSuccess = await response.json(); 
             console.log("data from server", data);
 
-            const user = new User(data.email, '', '');
+            const user = new User(data.email, data.displayName, '', data.profilePicture); //email, displayname, studyProgram, photoUrl
 
             await SecureStore.setItemAsync('idToken', data.idToken);
-            await SecureStore.setItemAsync('user', JSON.stringify(user)); // convert user js-obj. to json
+            await SecureStore.setItemAsync('user', JSON.stringify(user));
             dispatch({ type: LOGIN, payload: { user, idToken: data.idToken } })
         }
     };
@@ -75,8 +98,6 @@ export const signup = (email: string, password: string) => {
             })
         });
 
-        // console.log(response.json());
-
         if (!response.ok) {
             //There was a problem..
             //dispatch({type: SIGNUP_FAILED, payload: 'something'})
@@ -97,8 +118,7 @@ export const signup = (email: string, password: string) => {
 
 export const changePassword = (password: string) => {
     return async (dispatch: any, getState: any) => {
-        const idToken = getState().user.idToken; // if you have a reducer named user(from combineReducers) with a token variable​
-        // console.log(idToken)
+        const idToken = getState().user.idToken; 
 
         const response = await fetch('https://identitytoolkit.googleapis.com/v1/accounts:update?key=AIzaSyB-uLXO1Pu8wqjMLUyNtHefWZTEWYdYEPw', {
             method: 'POST',
@@ -112,21 +132,17 @@ export const changePassword = (password: string) => {
             })
         });
 
-        // console.log(response.json());
-
         if (!response.ok) {
-            //There was a problem..
-            //dispatch({type: SIGNUP_FAILED, payload: 'something'})
             console.log(response.json())
 
         } else {
-            const data: FirebaseSignupSuccess = await response.json(); // json to javascript
+            const data: FirebaseSignupSuccess = await response.json();
             console.log("data from server", data);
 
             const user = new User(data.email, '', '');
 
             await SecureStore.setItemAsync('idToken', data.idToken);
-            await SecureStore.setItemAsync('user', JSON.stringify(user)); // convert user js-obj. to json
+            await SecureStore.setItemAsync('user', JSON.stringify(user));
 
             dispatch({ type: CHANGE_PASSWORD, payload: { user, idToken: data.idToken } })
         }
@@ -135,7 +151,7 @@ export const changePassword = (password: string) => {
 
 export const updateProfile = (photoUrl: string, displayname: string, email: string, studyProgram: string) => {
     return async (dispatch: any, getState: any) => {
-        const idToken = getState().user.idToken; // if you have a reducer named user(from combineReducers) with a token variable​
+        const idToken = getState().user.idToken;
 
         let body;
 
@@ -162,37 +178,35 @@ export const updateProfile = (photoUrl: string, displayname: string, email: stri
             }
         }
         else {
-            body = {
-                idToken: idToken,
-                returnSecureToken: true
-            }
+            body = undefined;
         }
 
-        console.log(body)
+        console.log("body: ", body)
 
-        const response = await fetch('https://identitytoolkit.googleapis.com/v1/accounts:update?key=AIzaSyB-uLXO1Pu8wqjMLUyNtHefWZTEWYdYEPw', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(body)
-        });
+        if (body) {
+            const response = await fetch('https://identitytoolkit.googleapis.com/v1/accounts:update?key=AIzaSyB-uLXO1Pu8wqjMLUyNtHefWZTEWYdYEPw', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(body)
+            });
 
-        if (!response.ok) {
-            console.log(response.json())
+            if (!response.ok) {
+                console.log(response.json())
 
-        } else {
-            const data: FirebaseSignupSuccess = await response.json(); // json to javascript
-            console.log("data from server", data);
+            } else {
+                const data: FirebaseUpdateProfileSuccess = await response.json();
+                console.log("data from server", data);
 
-            const user = new User(data.email, displayname, studyProgram, photoUrl);
+                const user = new User(data.email, data.displayName, studyProgram, data.photoUrl);
 
-            //TODO: where is the new token????
+                await dispatch(refreshTokenToIdToken(data.refreshToken));
+                // await SecureStore.setItemAsync('idToken', JSON.stringify(data.idToken)); //the new token is set in refreshTokeToIdToken();
+                await SecureStore.setItemAsync('user', JSON.stringify(user)); 
 
-            await SecureStore.setItemAsync('idToken', JSON.stringify(data.idToken)).catch(e => { console.log("id token error:"); console.log(e)});
-            await SecureStore.setItemAsync('user', JSON.stringify(user)).catch(e => { console.log("user error:"); console.log(e); }); // convert user js-obj. to json
-
-            dispatch({ type: UPDATE_PROFILE, payload: { user, idToken: data.idToken } })
+                dispatch({ type: UPDATE_PROFILE, payload: { user } })
+            }
         }
     };
 }

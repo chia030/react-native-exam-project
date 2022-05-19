@@ -53,7 +53,7 @@ export default function OpenChatScreen() {
                 placeholder="New Message..."
             />
             <Button title="Send new message" onPress={handleMessage} />
-            <Button title="Delete Chat" onPress={handleDeleteChat}/>
+            <Button title="Delete Chat" onPress={handleDeleteChat} />
         </View>
     );
 }
